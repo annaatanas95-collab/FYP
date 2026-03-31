@@ -44,7 +44,7 @@ class AuthController extends Controller
 
         ]);
         if(Auth::attempt($credentials)){
-            return redirect()->back()->with('success', 'Login successful');
+           return redirect('/coordinatordashboard');
         }
         return back()->withErrors([
             'username'=>'invalid credentials'
