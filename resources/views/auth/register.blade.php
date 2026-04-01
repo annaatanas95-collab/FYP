@@ -2,119 +2,111 @@
 <!html>
 <head>
     <title>Register</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
 
         body {
 
-            margin: 0;
-            font-family: Arial;
-            background: linear-gradient(to right, #1ca8df, #17a2d1);
-            height: 100vh;
+            background: #043A3F;
+            font-family: Arial, sans-serif;
+        }
+
+        .auth-container {
             display: flex;
             justify-content: center;
             align-items: center;
+            height: 100vh;
         }
 
-        .form-container {
-            background: white;
+
+        .auth-card {
+            background: #EDEFF1;
             padding: 30px;
-            width: 320px;
             border-radius: 10px;
-            box-shadow: 0px 0px 15px rgba(0,0,0,0.2);
-            text-align: center;
+            width: 350px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
         }
-
         .input-group {
-            position: relative;
-            margin: 12px 0;
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            background: #DDE3E8;
+            border-radius: 5px;
+            overflow: hidden;
         }
-
         .input-group i {
-            position: absolute;
-            top: 12px;
-            left: 10px;
-            color: gray;
-        }
-
-        .input-group input {
-            width: 90%;
-            padding: 10px 10px 10px 35px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-        }
-
-        input:focus {
-            outline: none;
-            border-color: #4facfe;
-        }
-
-        button {
-            width: 100%;
+            background: #E5E7EB;
             padding: 10px;
-            background: #4facfe;
+            color: #9CA3AF;
+        }
+        .input-group input {
             border: none;
+            outline: none;
+            padding: 10px;
+            flex: 1;
+            background: transparent;
+        }
+        .auth-btn {
+            width: 100%;
+            background: #F47C5C;
             color: white;
+            border: none;
+            padding: 10px;
             border-radius: 5px;
+            font-weight: bold;
             cursor: pointer;
         }
 
-        button:hover {
-            background: #007bff;
+        .auth-btn:hover {
+            background: #E96A4A;
         }
-        .bottom-text {
-            margin-top: 15px;
-            font-size: 14px;
+        .auth-link {
+            text-align: center;
+            margin-top: 10px;
         }
 
-        .bottom-text a {
-            color: #4facfe;
+        .auth-link a {
+            color: #F47C5C;
             text-decoration: none;
-        }
-
-        .bottom-text a:hover {
-            text-decoration: underline;
         }
     </style>
 </head>
 <body>
-   <div class="form-container">
-        <h2>Register</h2>
+   <div class="auth-container">
 
-        <form method="POST" action="/register">
-            @csrf
+        <div class="auth-card">
 
-            <div class="input-group">
-                <i class="fa-solid fa-user"></i>
-                <input type="text" name="name" placeholder="Full Name" required>
+            <h3 style="text-align:center;">Register</h3>
+
+            <form method="POST" action="/register">
+                @csrf
+
+                <div class="input-group">
+                    <i class="fa fa-user"></i>
+                    <input type="text" name="name" placeholder="Full Name">
+                </div>
+
+                <div class="input-group">
+                    <i class="fa fa-envelope"></i>
+                    <input type="email" name="email" placeholder="Email">
+                </div>
+                <div class="input-group">
+                    <i class="fa fa-user"></i>
+                    <input type="text" name="username" placeholder="Username">
+                </div>
+
+                <div class="input-group">
+                    <i class="fa fa-lock"></i>
+                    <input type="password" name="password" placeholder="Password">
+                </div>
+
+                <button class="auth-btn">Register</button>
+            </form>
+
+            <div class="auth-link">
+                <p>Already have an account? <a href="/login">Login</a></p>
             </div>
-
-            <div class="input-group">
-                <i class="fa-solid fa-envelope"></i>
-                <input type="email" name="email" placeholder="Email" required>
-            </div>
-
-            <div class="input-group">
-                <i class="fa-solid fa-user"></i>
-                <input type="text" name="username" placeholder="Username" required>
-            </div>
-
-            <div class="input-group">
-                <i class="fa-solid fa-lock"></i>
-                <input type="password" name="password" placeholder="Password" required>
-            </div>
-
-            <div class="input-group">
-                <i class="fa-solid fa-lock"></i>
-                <input type="password" name="password_confirmation" placeholder="Confirm Password" required>
-            </div>
-
-            <button type="submit">Register</button>
-        </form>
-
-        <p class="bottom-text">
-            Already have an account? <a href="/login">Login</a>
-        </p>
+        </div>
     </div>
 
 </body>
