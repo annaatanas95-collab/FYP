@@ -2,74 +2,129 @@
 <html>
 <head>
     <title>Coordinator Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: #1bc2d2;
+            background: #81A6C6;
             margin: 0;
             padding: 0;
         }
 
         .dashboard-container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 50px auto;
-            background: #fff;
+            background: #AACDDC;
             padding: 40px;
             border-radius: 12px;
             box-shadow: 0px 10px 25px rgba(0,0,0,0.2);
-            text-align: center;
+            position: relative;
         }
 
         h1 {
             color: #333;
             margin-bottom: 30px;
+            text-align: center;
         }
 
         .btn {
             display: inline-block;
-            margin: 10px;
-            padding: 12px 25px;
+            margin: 5px;
+            padding: 12px 20px;
             border-radius: 8px;
             text-decoration: none;
             color: #fff;
             font-weight: bold;
             cursor: pointer;
             transition: 0.3s;
+            font-size: 14px;
         }
 
         .btn-upload { background: #28a745; }
         .btn-upload:hover { background: #218838; }
 
+        .btn-delete { background: #C0392B; }
+        .btn-delete:hover { background: #A93226; }
+
         .btn-register { background: #007bff; }
         .btn-register:hover { background: #0069d9; }
+
+        .btn-view { background: #6c757d; }
+        .btn-view:hover { background: #5a6268; }
 
         .btn-logout { background: grey; }
         .btn-logout:hover { background: #cc0000; }
 
         input[type="file"] {
             padding: 10px;
-            margin: 10px 0;
             border-radius: 6px;
             border: 1px solid #ccc;
+            font-size: 14px;
         }
 
-        .success { color: green; margin-bottom: 15px; }
-        .error { color: red; margin-bottom: 15px; }
+        .row {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
 
-        .delete-btn {
-            background-color: #8fbebf; 
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 5px;
+        /* Modal CSS */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 1000; 
+            padding-top: 100px; 
+            left: 0; top: 0;
+            width: 100%; height: 100%; 
+            overflow: auto; 
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 30px;
+            border: 1px solid #888;
+            width: 50%;
+            border-radius: 10px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
             font-weight: bold;
             cursor: pointer;
-            transition: 0.3s;
         }
 
-        .delete-btn:hover {
-            background-color: #C0392B; 
-            transform: scale(1.05);
+        .close:hover { color: black; }
+
+        .success { color: green; margin-bottom: 15px; text-align:center; }
+        .error { color: red; margin-bottom: 15px; text-align:center; }
+
+        /* Input group with icons */
+        .input-group {
+            position: relative;
+            width: 90%;
+            margin-bottom: 15px;
+        }
+
+        .input-group i {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #333;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 10px 10px 10px 35px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 14px;
         }
     </style>
 </head>
@@ -89,25 +144,75 @@
             </div>
         @endif
 
-        <!-- Upload Students -->
-        <form method="POST" action="/coordinator/upload-students" enctype="multipart/form-data">
-            @csrf
-            <input type="file" name="file" required>
-            <button class="btn btn-upload" type="submit">Upload Students CSV</button>
-        </form>
-        <form method="POST" action="/coordinator/delete-uploaded-students" style="margin-top:20px;">
-            @csrf
-            <button type="submit" class="delete-btn">Delete Uploaded Students</button>
-        </form>
+        <!-- Logout bottom-right -->
+        <div style="position: absolute; bottom: 20px; right: 20px;">
+            <form method="POST" action="/logout">
+                @csrf
+                <button class="btn btn-logout" type="submit"><i class="fa fa-sign-out-alt"></i> Logout</button>
+            </form>
+        </div>
 
-        <!-- Register Supervisor -->
-        <a href="/register" class="btn btn-register">Register Supervisor</a>
+        <!-- Row 1: Upload + Delete -->
+        <div class="row">
+            <form method="POST" action="/coordinator/upload-students" enctype="multipart/form-data" style="display:flex; align-items:center; gap:10px;">
+                @csrf
+                <input type="file" name="file" required>
+                <button class="btn btn-upload" type="submit"><i class="fa fa-upload"></i> Upload</button>
+            </form>
 
-        <!-- Logout -->
-        <form method="POST" action="/logout">
-            @csrf
-            <button class="btn btn-logout" type="submit">Logout</button>
-        </form>
+            <form method="POST" action="/coordinator/delete-uploaded-students">
+                @csrf
+                <button type="submit" class="btn btn-delete"><i class="fa fa-trash"></i> Delete Uploaded</button>
+            </form>
+        </div>
+
+        <!-- Row 2: Register Supervisor + View Supervisors -->
+        <div class="row">
+            <button class="btn btn-register" id="openModal"><i class="fa fa-user-plus"></i> Register Supervisor</button>
+            <a href="{{ route('coordinator.supervisors') }}" class="btn btn-view"><i class="fa fa-users"></i> View Supervisors</a>
+        </div>
     </div>
+
+    <!-- Modal Form for Register Supervisor -->
+    <div id="supervisorModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Register Supervisor</h2>
+            <form method="POST" action="/coordinator/register-supervisor">
+                @csrf
+                <div class="input-group">
+                    <i class="fa fa-user"></i>
+                    <input type="text" name="name" placeholder="Full Name" required>
+                </div>
+
+                <div class="input-group">
+                    <i class="fa fa-envelope"></i>
+                    <input type="email" name="email" placeholder="Email" required>
+                </div>
+
+                <div class="input-group">
+                    <i class="fa fa-id-badge"></i>
+                    <input type="text" name="username" placeholder="Username" required>
+                </div>
+
+                <div class="input-group">
+                    <i class="fa fa-lock"></i>
+                    <input type="password" name="password" placeholder="Password" required>
+                </div>
+
+                <button class="btn btn-register" type="submit">Register</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        var modal = document.getElementById("supervisorModal");
+        var btn = document.getElementById("openModal");
+        var span = document.getElementsByClassName("close")[0];
+
+        btn.onclick = function() { modal.style.display = "block"; }
+        span.onclick = function() { modal.style.display = "none"; }
+        window.onclick = function(event) { if(event.target == modal){ modal.style.display = "none"; } }
+    </script>
 </body>
 </html>

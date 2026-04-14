@@ -15,9 +15,20 @@ Route::post('/login', [AuthController::class, 'login'])->name('auth.login');
 Route::middleware(['auth'])->group(function () {
     Route::get('/coordinator/dashboard', [CoordinatorController::class, 'dashboard'])->name('coordinator.dashboard');
     Route::post('/coordinator/upload-students', [CoordinatorController::class, 'uploadStudents']);
+    Route::post('/coordinator/delete-uploaded-students', [CoordinatorController::class, 'deleteUploadedStudents']);
 
+    // Supervisor Registration
+    Route::get('/coordinator/register-supervisor', [CoordinatorController::class, 'showRegisterSupervisor'])->name('coordinator.showRegisterSupervisor');
+    Route::post('/coordinator/register-supervisor', [CoordinatorController::class, 'registerSupervisor'])->name('coordinator.registerSupervisor');
 });
-Route::post('/coordinator/delete-uploaded-students', [CoordinatorController::class, 'deleteUploadedStudents'])->middleware('auth');
+Route::get('/coordinator/supervisors', [CoordinatorController::class, 'showSupervisors'])
+    ->name('coordinator.supervisors');
+
+Route::post('/coordinator/update-supervisor', [CoordinatorController::class, 'updateSupervisor'])
+    ->name('coordinator.supervisor.update');
+
+Route::post('/coordinator/delete-supervisor/{id}', [CoordinatorController::class, 'deleteSupervisor'])
+    ->name('coordinator.supervisor.delete');
 
 // Student login
 Route::get('/student/login', [AuthController::class, 'showStudentLogin'])->name('auth.showStudentLogin');
