@@ -10,15 +10,16 @@ class StudentController extends Controller
     // Dashboard view
     public function dashboard()
     {
-        $user = Auth::user();
+        $student = Auth::user();
 
         // Ensure only students can access
-        if($user->role !== 'student'){
+        if ($student->role !== 'student') {
             abort(403, 'Unauthorized access');
         }
 
-        return view('student.dashboard');
-    }
+        // LOAD supervisor relationship
+        $student->load('supervisor');
 
-    // Here you can add other student functions in future
+        return view('student.dashboard', compact('student'));
+    }
 }

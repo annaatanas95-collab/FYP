@@ -22,13 +22,13 @@ class CoordinatorController extends Controller
         ]);
 
         $file = fopen($request->file('file'), 'r');
-        fgetcsv($file); // skip header row
+        fgetcsv($file); // skip header
 
         $rowsAdded = 0;
         $duplicates = 0;
 
-        // get existing registration numbers (fast check)
         $existingUsers = User::pluck('registration_number')->toArray();
+        $supervisors = User::where('role', 'supervisor')->get();
 
         $data = [];
 
@@ -42,18 +42,18 @@ class CoordinatorController extends Controller
 
             if (!$registrationNumber || !$name) continue;
 
-            // skip duplicates
             if (in_array($registrationNumber, $existingUsers)) {
                 $duplicates++;
                 continue;
             }
-            $supervisorNameClean = preg_replace('/\s+/', ' ', trim(strtolower($supervisorName)));
 
-                $supervisor = User::where('role', 'supervisor')
-                    ->get()
-                    ->first(function ($sup) use ($supervisorNameClean) {
-                        $dbName = preg_replace('/\s+/', ' ', trim(strtolower($sup->name)));
-                    return $dbName === $supervisorNameClean;
+            // CLEAN NAME 
+            $csvNameClean = preg_replace('/[^a-z]/', '', strtolower($supervisorName));
+
+            // find supervisor
+            $supervisor = $supervisors->first(function ($sup) use ($csvNameClean) {
+                $dbNameClean = preg_replace('/[^a-z]/', '', strtolower($sup->name));
+                return $dbNameClean === $csvNameClean;
             });
 
             $data[] = [
@@ -64,18 +64,14 @@ class CoordinatorController extends Controller
                 'password' => Hash::make('123456'),
                 'role' => 'student',
                 'must_change_password' => true,
-
-                // 🔥 IMPORTANT FIX
                 'supervisor_id' => $supervisor ? $supervisor->id : null,
                 'supervisor_name' => $supervisorName,
-
                 'created_at' => now(),
                 'updated_at' => now(),
             ];
 
             $rowsAdded++;
 
-            // insert in chunks
             if (count($data) == 100) {
                 User::insert($data);
                 $data = [];
@@ -84,7 +80,6 @@ class CoordinatorController extends Controller
 
         fclose($file);
 
-        // insert remaining
         if (!empty($data)) {
             User::insert($data);
         }
@@ -98,7 +93,7 @@ class CoordinatorController extends Controller
         return back()->with('success', $message);
     }
 
-    // Delete uploaded students
+    // Delete students
     public function deleteUploadedStudents()
     {
         $deleted = User::where('role', 'student')
@@ -108,7 +103,7 @@ class CoordinatorController extends Controller
         return back()->with('success', "$deleted students deleted successfully");
     }
 
-    // Show supervisor register form
+    // Show supervisor form
     public function showRegisterSupervisor()
     {
         return view('coordinator.register-supervisor');
@@ -132,15 +127,24 @@ class CoordinatorController extends Controller
             'role' => 'supervisor',
         ]);
 
-        // auto assign students from CSV
-        User::where('role', 'student')
-            ->whereRaw('LOWER(TRIM(supervisor_name)) = ?', [strtolower($supervisor->name)])
-            ->update([
-                'supervisor_id' => $supervisor->id
-            ]);
+        // FIX EXISTING STUDENTS
+        $students = User::where('role', 'student')->get();
+
+        $dbNameClean = preg_replace('/[^a-z]/', '', strtolower($supervisor->name));
+
+        foreach ($students as $student) {
+
+            $csvNameClean = preg_replace('/[^a-z]/', '', strtolower($student->supervisor_name));
+
+            if ($csvNameClean === $dbNameClean) {
+                $student->update([
+                    'supervisor_id' => $supervisor->id
+                ]);
+            }
+        }
 
         return redirect()->route('coordinator.dashboard')
-            ->with('success', 'Supervisor registered successfully!');
+            ->with('success', 'Supervisor registered and students assigned successfully!');
     }
 
     // Show supervisors

@@ -9,117 +9,115 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    // Coordinator Registration
 
-    public function showRegister() {
-        return view('auth.register'); // resources/views/auth/register.blade.php
+    // COORDINATOR + SUPERVISOR LOGIN (SHARED LOGIN PAGE)
+
+
+    public function showLogin()
+    {
+        return view('auth.login'); // shared login for coordinator + supervisor
     }
 
-    public function register(Request $request) {
-        $request->validate([
-            'name'=>'required|string|max:255',
-            'email'=>'required|email|unique:users',
-            'username'=>'required|unique:users',
-            'password'=>'required|min:6|confirmed'
-        ]);
-
-        $user = User::create([
-            'name'=>$request->name,
-            'email'=>$request->email,
-            'username'=>$request->username,
-            'password'=>Hash::make($request->password),
-            'role'=>'coordinator', 
-        ]);
-
-        Auth::login($user);
-
-        return redirect()->route('auth.showLogin')
-                         ->with('success','Account created successfully, please login');
-    }
-
-    // Coordinator Login
-    
-    public function showLogin() {
-        return view('auth.login'); 
-    }
-
-    public function login(Request $request) {
+    public function login(Request $request)
+    {
         $credentials = $request->validate([
-            'username'=>'required',
-            'password'=>'required'
+            'username' => 'required',
+            'password' => 'required'
         ]);
 
-        if(Auth::attempt($credentials)){
+        if (Auth::attempt($credentials)) {
+
             $user = Auth::user();
 
-            if($user->role != 'coordinator'){
-                Auth::logout();
-                return back()->withErrors([
-
-                        'username' => 'Access denied. Please use the correct login page.'
-                    ]);
+            // COORDINATOR
+            if ($user->role === 'coordinator') {
+                return redirect()->route('coordinator.dashboard');
             }
 
-            return redirect()->route('coordinator.dashboard');
+            // SUPERVISOR
+            if ($user->role === 'supervisor') {
+                return redirect()->route('supervisor.dashboard');
+            }
+
+            // if someone else tries using this login
+            Auth::logout();
+            return back()->withErrors([
+                'username' => 'Unauthorized access for this login page'
+            ]);
         }
 
-        return back()->withErrors(['username'=>'Invalid credentials']);
-    }
-    // Student Login
-    
-    public function showStudentLogin() {
-        return view('student.login'); 
+        return back()->withErrors([
+            'username' => 'Invalid credentials'
+        ]);
     }
 
-    public function studentLogin(Request $request) {
+    // STUDENT LOGIN (UNCHANGED - YOUR CURRENT SYSTEM)
+    
+
+    public function showStudentLogin()
+    {
+        return view('student.login');
+    }
+
+    public function studentLogin(Request $request)
+    {
         $credentials = $request->validate([
-            'username'=>'required', // registration number
-            'password'=>'required'
+            'username' => 'required',
+            'password' => 'required'
         ]);
 
-        if(Auth::attempt($credentials)){
+        if (Auth::attempt($credentials)) {
+
             $user = Auth::user();
 
-            if($user->role != 'student'){
+            if ($user->role !== 'student') {
                 Auth::logout();
-                return back()->withErrors(['username'=>'Unauthorized login for this page']);
+                return back()->withErrors([
+                    'username' => 'Unauthorized login for student portal'
+                ]);
             }
 
-            // First login check
-            if($user->must_change_password){
+            // first login password change check
+            if ($user->must_change_password) {
                 return redirect()->route('auth.showChangePassword');
             }
 
             return redirect()->route('student.dashboard');
         }
 
-        return back()->withErrors(['username'=>'Invalid credentials']);
+        return back()->withErrors([
+            'username' => 'Invalid credentials'
+        ]);
     }
 
-    // Change Password (student only)
+    // CHANGE PASSWORD (STUDENT ONLY)
 
-    public function showChangePassword() {
+    public function showChangePassword()
+    {
         return view('auth.change-password');
     }
 
-    public function updatePassword(Request $request) {
+    public function updatePassword(Request $request)
+    {
         $request->validate([
-            'password'=>'required|min:6|confirmed'
+            'password' => 'required|min:6|confirmed'
         ]);
 
         $user = Auth::user();
+
         $user->update([
-            'password'=>Hash::make($request->password),
-            'must_change_password'=>false
+            'password' => Hash::make($request->password),
+            'must_change_password' => false
         ]);
 
         return redirect()->route('student.dashboard')
-                         ->with('success','Password updated successfully!');
+            ->with('success', 'Password updated successfully');
     }
 
-    // Logout
+    // LOGOUT (ALL USERS)
 
-    public function logout() {
+    public function logout()
+    {
         Auth::logout();
         return redirect()->route('auth.showLogin');
     }
