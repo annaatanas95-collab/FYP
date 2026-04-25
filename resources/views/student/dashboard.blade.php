@@ -1,4 +1,3 @@
-<!-- resources/views/student/dashboard.blade.php -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -7,24 +6,56 @@
 
     <style>
         body {
-            background: #1bc2d2;
+            background: #043A3F;
             font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+            margin: 0;
+            padding: 0;
         }
 
-        .dashboard-container {
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            margin: 40px auto;
             background: white;
-            padding: 40px;
+            padding: 30px;
             border-radius: 10px;
-            box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
-            text-align: center;
-            width: 400px;
+            box-shadow: 0px 0px 15px rgba(0,0,0,0.1);
+        }
+
+        /* HEADER PROFILE */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .profile i {
+            font-size: 30px;
+            color: #043A3F;
+        }
+
+        .logout-btn {
+            background: red;
+            padding: 8px 12px;
+            border: none;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .logout-btn:hover {
+            background: darkred;
         }
 
         h1 {
+            text-align: center;
             margin-bottom: 20px;
         }
 
@@ -37,55 +68,179 @@
         }
 
         .info-box {
-            margin: 15px 0;
-            padding: 10px;
             background: #f1f1f1;
+            padding: 15px;
             border-radius: 5px;
+            margin-bottom: 20px;
         }
 
-        .logout-btn {
-            display: inline-block;
-            margin-top: 20px;
-            text-decoration: none;
+        .section {
+            margin-top: 30px;
+        }
+
+        .section h2 {
+            color: #043A3F;
+        }
+
+        input[type="text"], input[type="file"] {
+            padding: 10px;
+            width: 70%;
+            margin-top: 10px;
+        }
+
+        /* 🔥 spacing improved */
+        .form-group {
+            margin-top: 10px;
+        }
+
+        .btn-submit {
+            margin-top: 15px;
+        }
+
+        button {
+            padding: 10px 15px;
+            background: #043A3F;
             color: white;
-            background: grey;
-            padding: 10px 20px;
-            border-radius: 5px;
-            font-weight: bold;
-            cursor: pointer;
             border: none;
+            border-radius: 5px;
+            cursor: pointer;
         }
 
-        .logout-btn:hover {
-            background: darkred;
+        button:hover {
+            background: #06565c;
+        }
+
+        .stage-box {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
+
+        .locked {
+            color: red;
+        }
+
+        .open {
+            color: green;
         }
     </style>
 </head>
 
 <body>
-    <div class="dashboard-container">
 
-        <h1>Welcome, {{ $student->name }}!</h1>
+<div class="container">
 
-        <!-- Success message -->
-        @if(session('success'))
-            <div class="success-msg">{{ session('success') }}</div>
-        @endif
-
-        <p>You are now logged in as a student.</p>
-
-        <!-- Supervisor Info -->
-        <div class="info-box">
-            <strong>Supervisor:</strong><br>
-
-            {{ optional($student->supervisor)->name ?? 'No supervisor assigned yet' }}
+    <!--PROFILE + LOGOUT -->
+    <div class="top-bar">
+        <div class="profile">
+            <i class="fas fa-user-circle"></i>
+            <div>
+                <strong>{{ $student->name }}</strong><br>
+                <small>{{ $student->email }}</small>
+            </div>
         </div>
 
         <form method="POST" action="{{ route('auth.logout') }}">
             @csrf
-            <button type="submit" class="logout-btn">Logout</button>
+            <button type="submit" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
         </form>
+    </div>
+
+    <h1>Student Dashboard</h1>
+
+    @if(session('success'))
+        <div class="success-msg">{{ session('success') }}</div>
+    @endif
+
+    <!-- Supervisor -->
+    <div class="info-box">
+        <strong>Supervisor:</strong><br>
+        {{ optional($student->supervisor)->name ?? 'Not Assigned Yet' }}
+    </div>
+
+    <!-- ================= PROJECT TITLE ================= -->
+    <div class="section">
+        <h2>Project Title</h2>
+
+        @if(!$project)
+
+            <form method="POST" action="{{ route('student.submitTitle') }}">
+                @csrf
+
+                <div class="form-group">
+                    <input type="text" name="title" placeholder="Enter project title" required>
+                </div>
+
+                <button type="submit" class="btn-submit">Submit Title</button>
+            </form>
+
+        @else
+            <p><strong>Title:</strong> {{ $project->title }}</p>
+            <p><strong>Status:</strong> {{ $project->status }}</p>
+
+            @if($project->status == 'pending')
+                <p style="color: orange;">Waiting for supervisor approval...</p>
+
+            @elseif($project->status == 'rejected')
+                <p style="color:red;">Rejected. Submit again.</p>
+
+                <form method="POST" action="{{ route('student.submitTitle') }}">
+                    @csrf
+
+                    <div class="form-group">
+                        <input type="text" name="title" placeholder="Resubmit title" required>
+                    </div>
+
+                    <button type="submit" class="btn-submit">Resubmit</button>
+                </form>
+
+            @elseif($project->status == 'approved')
+                <p style="color: green;">Approved ✔</p>
+            @endif
+        @endif
+    </div>
+
+    <!-- ================= STAGES ================= -->
+    @if($project && $project->status == 'approved')
+
+    <div class="section">
+        <h2>Project Stages</h2>
+
+        @foreach($stages as $stage)
+            <div class="stage-box">
+
+                <h3>{{ $stage->name }}</h3>
+
+                @if(!$stage->is_open)
+                    <p class="locked">🔒 Locked</p>
+                @else
+                    <p class="open">✅ Open</p>
+
+                    <p><strong>Deadline:</strong> {{ $stage->deadline ?? 'Not set' }}</p>
+
+                    <form method="POST" action="{{ route('student.upload') }}" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="stage_id" value="{{ $stage->id }}">
+
+                        <div class="form-group">
+                            <input type="file" name="file" required>
+                        </div>
+
+                        <button class="btn-submit">Upload</button>
+                    </form>
+                @endif
+
+            </div>
+        @endforeach
 
     </div>
+
+    @endif
+
+</div>
+
 </body>
 </html>

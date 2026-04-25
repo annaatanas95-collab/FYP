@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body {
-            background: #FFB347; /* light orange background */
+            background: #043A3F; 
             font-family: Arial, sans-serif;
         }
 

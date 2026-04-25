@@ -6,23 +6,24 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: #81A6C6;
+            background: #043A3F;
             margin: 0;
             padding: 0;
         }
 
         .dashboard-container {
-            max-width: 900px;
+            max-width: 1000px;
             margin: 50px auto;
-            background: #AACDDC;
+            background: #296374;
             padding: 40px;
             border-radius: 12px;
             box-shadow: 0px 10px 25px rgba(0,0,0,0.2);
             position: relative;
+            min-height: 90vh;
         }
 
         h1 {
-            color: #333;
+            color: #0b0b0b;
             margin-bottom: 30px;
             text-align: center;
         }
@@ -40,26 +41,27 @@
             font-size: 14px;
         }
 
-        .btn-upload { background: #28a745; }
-        .btn-upload:hover { background: #218838; }
+        .btn-upload { background: #d7450b; }
+        .btn-upload:hover { background: #f86939; }
 
-        .btn-delete { background: #C0392B; }
+        .btn-delete { background: #d7450b; }
         .btn-delete:hover { background: #A93226; }
 
-        .btn-register { background: #007bff; }
-        .btn-register:hover { background: #0069d9; }
+        .btn-register { background: #d7450b; }
+        .btn-register:hover { background: rgb(101, 162, 215); }
 
-        .btn-view { background: #6c757d; }
+        .btn-view { background: #c73209; }
         .btn-view:hover { background: #5a6268; }
 
-        .btn-logout { background: grey; }
-        .btn-logout:hover { background: #cc0000; }
+        .btn-logout { background: #c73209; }
+        .btn-logout:hover { background: #ec5e07; }
 
         input[type="file"] {
             padding: 10px;
-            border-radius: 6px;
-            border: 1px solid #ccc;
+            border-radius: 7px;
+            border: 1px solid rgb(18, 6, 6);
             font-size: 14px;
+            width: 160px;
         }
 
         .row {
@@ -101,7 +103,7 @@
 
         .close:hover { color: black; }
 
-        .success { color: green; margin-bottom: 15px; text-align:center; }
+        .success { color:#ec5e07; margin-bottom: 15px; text-align:center; }
         .error { color: red; margin-bottom: 15px; text-align:center; }
 
         /* Input group with icons */

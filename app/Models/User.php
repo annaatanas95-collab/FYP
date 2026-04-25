@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
-use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Models\Project;
 
 class User extends Authenticatable
 {
@@ -46,9 +46,10 @@ class User extends Authenticatable
         ];
     }
 
+    // ================= RELATIONSHIPS =================
+
     /**
-     * Relationship: Student → Supervisor
-     * (Each student belongs to one supervisor)
+     * Student → Supervisor
      */
     public function supervisor()
     {
@@ -56,11 +57,37 @@ class User extends Authenticatable
     }
 
     /**
-     * Relationship: Supervisor → Students
-     * (One supervisor has many students)
+     * Supervisor → Students
      */
     public function students()
     {
         return $this->hasMany(User::class, 'supervisor_id');
     }
+
+    /**
+     * Student → Project (Title)
+     */
+    public function project()
+    {
+        return $this->hasOne(Project::class, 'student_id');
+    }
+
+    /**
+     * Helper: check role
+     */
+    public function isStudent()
+    {
+        return $this->role === 'student';
+    }
+
+    public function isSupervisor()
+    {
+        return $this->role === 'supervisor';
+    }
+
+    public function isCoordinator()
+    {
+        return $this->role === 'coordinator';
+    }
 }
+

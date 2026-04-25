@@ -6,7 +6,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: #81A6C6;
+            background: #043A3F;
             margin: 0;
             padding: 0;
         }
@@ -14,7 +14,7 @@
         .container {
             max-width: 900px;
             margin: 50px auto;
-            background: #AACDDC;
+            background: #296374;
             padding: 40px;
             border-radius: 12px;
             box-shadow: 0px 10px 25px rgba(0,0,0,0.2);
@@ -22,7 +22,7 @@
         }
 
         h1 {
-            color: #333;
+            color: #080808;
             margin-bottom: 30px;
             text-align: center;
         }
@@ -36,12 +36,12 @@
         table th, table td {
             padding: 10px;
             text-align: left;
-            border-bottom: 1px solid #ccc;
+            border-bottom: 1px solid #0e0e0e;
         }
 
         table th {
-            background: #007bff;
-            color: white;
+            background: rgb(203, 196, 192);
+            color: black;
         }
 
         .btn {
@@ -56,16 +56,16 @@
             font-size: 13px;
         }
 
-        .btn-edit { background: #28a745; }
-        .btn-edit:hover { background: #218838; }
+        .btn-edit { background: #ea5607; }
+        .btn-edit:hover { background: #884f21; }
 
-        .btn-delete { background: #C0392B; }
+        .btn-delete { background: #db3401; }
         .btn-delete:hover { background: #A93226; }
 
-        .btn-back { background: #6c757d; }
-        .btn-back:hover { background: #5a6268; }
+        .btn-back { background: #eb4a05; }
+        .btn-back:hover { background: #ce6c03; }
 
-        .btn-logout { background: grey; }
+        .btn-logout { background: #eb4a05; }
         .btn-logout:hover { background: #cc0000; }
 
         /* Modal CSS */

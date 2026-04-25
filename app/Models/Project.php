@@ -6,5 +6,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class Project extends Model
 {
-    protected $fillable = ['Username', 'Password', 'Email'];
+    protected $fillable = [
+        'student_id',
+        'title',
+        'status'
+    ];
+
+    public function student()
+    {
+        return $this->belongsTo(User::class, 'student_id');
+    }
 }
+

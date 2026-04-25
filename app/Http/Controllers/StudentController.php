@@ -4,22 +4,56 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Project;
+use App\Models\Stage;
 
 class StudentController extends Controller
 {
-    // Dashboard view
+    // ================= DASHBOARD =================
     public function dashboard()
     {
         $student = Auth::user();
 
-        // Ensure only students can access
-        if ($student->role !== 'student') {
+        // Security check
+        if (!$student || $student->role !== 'student') {
             abort(403, 'Unauthorized access');
         }
 
-        // LOAD supervisor relationship
-        $student->load('supervisor');
+        // Load relationships
+        $student->load(['supervisor', 'project']);
 
-        return view('student.dashboard', compact('student'));
+        // Get project (safe)
+        $project = $student->project ?? null;
+
+        // Get stages ordered
+        $stages = Stage::orderBy('order', 'asc')->get();
+
+        return view('student.dashboard', compact('student', 'project', 'stages'));
+    }
+
+    // ================= SUBMIT TITLE =================
+    public function submitTitle(Request $request)
+    {
+        $request->validate([
+            'title' => 'required|string|max:255'
+        ]);
+
+        $student = Auth::user();
+
+        // prevent non-students
+        if ($student->role !== 'student') {
+            abort(403, 'Unauthorized');
+        }
+
+        // Create or update title
+        Project::updateOrCreate(
+            ['student_id' => $student->id],
+            [
+                'title' => trim($request->title),
+                'status' => 'pending'
+            ]
+        );
+
+        return redirect()->back()->with('success', 'Title submitted for approval');
     }
 }

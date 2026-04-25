@@ -6,7 +6,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: #81A6C6;
+            background: #043A3F;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -15,7 +15,7 @@
         }
 
         .form-container {
-            background: #AACDDC;
+            background: #79270b;
             padding: 40px;
             border-radius: 12px;
             box-shadow: 0px 10px 25px rgba(0,0,0,0.2);
@@ -25,7 +25,7 @@
         h2 {
             text-align: center;
             margin-bottom: 30px;
-            color: #333;
+            color: #010000;
         }
 
         label {
@@ -47,7 +47,7 @@
         .submit-btn {
             width: 100%;
             padding: 12px;
-            background-color: #007bff;
+            background-color: #e73a0a;
             color: white;
             border: none;
             border-radius: 8px;
@@ -57,12 +57,12 @@
         }
 
         .submit-btn:hover {
-            background-color: #0069d9;
+            background-color: #de4116;
         }
 
         .success-msg {
             background: #D4EDDA;
-            color: #155724;
+            color: #ec3f0b;
             padding: 10px;
             border-radius: 5px;
             margin-bottom: 20px;
@@ -70,7 +70,7 @@
 
         .error-msg {
             background: #F8D7DA;
-            color: #721C24;
+            color: #d31402;
             padding: 10px;
             border-radius: 5px;
             margin-bottom: 10px;
@@ -80,7 +80,7 @@
             display: inline-block;
             margin-top: 15px;
             text-decoration: none;
-            color: #333;
+            color: #fc5304;
         }
     </style>
 </head>
