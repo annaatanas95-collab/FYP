@@ -3,12 +3,18 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\ProjectStage;
+
 class Stage extends Model
 {
     protected $fillable = [
         'name',
-        'order',
-        'is_open',
-        'deadline'
+        'order'
     ];
+
+    // relation na project_stages
+    public function projectStages()
+    {
+        return $this->hasMany(ProjectStage::class);
+    }
 }

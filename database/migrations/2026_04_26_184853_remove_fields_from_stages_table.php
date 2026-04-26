@@ -9,23 +9,23 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-
     public function up(): void
     {
-        Schema::create('stages', function (Blueprint $table) {
-            $table->id();
-            $table->string('name'); 
-            $table->integer('order'); 
-            $table->boolean('is_open')->default(false);
-            $table->date('deadline')->nullable();
-            $table->timestamps();
+        Schema::table('stages', function (Blueprint $table) {
+        $table->dropColumn(['is_open', 'deadline']);
+
         });
+        
     }
+
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('stages');
+        Schema::table('stages', function (Blueprint $table) {
+            $table->boolean('is_open')->default(false);
+            $table->date('deadline')->nullable();
+        });
     }
 };
